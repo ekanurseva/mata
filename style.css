@@ -1,0 +1,81 @@
+body{
+    background: #336B87; padding: 0; margin: 0;
+}
+
+.sidebar{
+    min-width: 255px; 
+    max-width: 255px;
+    min-height: 100vh; 
+    background-color: #90AFC5; 
+}
+.sidebar ul {
+    padding-left: 2px;
+    text-align: center;
+}
+.sidebar ul li a{
+    font-weight: bold;
+    color: black;
+    font-size: auto;
+    text-decoration: none;
+}
+.sidebar ul li{
+    margin-top: 20px;
+    margin-bottom: 10px;
+    list-style-type: none;
+}
+.sidebar li.active{
+    background:  #336B87;
+    width: auto;
+    height: auto;
+    padding: 5px 0;
+    border-radius: 20px;
+}
+.sidebar ul li.active a{
+    color: white;
+    font-size: auto;
+}
+
+.container .row{
+    box-sizing: border-box;
+    padding: 0 30px;
+}
+.container .row .col{
+    background-color: #fff;
+}
+.container .row button{
+    width: 50px;
+}
+
+.container .row .col-6 .input button{
+   width: 200px;
+}
+.login {
+    border-radius: 10px; border: border-box; width: 40%; height: 40%; background: #90AFC5;
+}
+.container .row .col-6 .lg {
+    width: 100px; margin-top: 15px;
+}
+.lupa {
+    margin-top: -8px; margin-bottom: 18px;
+}
+.container .tabel {
+    border-radius: 10px; border: border-box;  background: #90AFC5;
+}
+
+
+.content .container .dataTables_wrapper{
+    position: relative;
+    clear: both;
+    padding: 0;
+    margin-top: 25px;
+    background: mintcream;
+}
+.container .dataTables_wrapper .dataTables_length {
+    float: left;
+    padding: 10px;
+}
+.container .dataTables_wrapper .dataTables_filter {
+    float: right;
+    text-align: right;
+    padding: 10px;
+}
