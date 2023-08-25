@@ -42,7 +42,7 @@ function hitung($data)
 
     $data_penyakit = query("SELECT * FROM diagnosa");
     $gejala = query("SELECT DISTINCT nama_gejala FROM gejala");
-
+    $usia = $data['usia'];
     // Ambil CF User
     foreach ($gejala as $gej) {
         $parameter = str_replace(" ", "_", $gej['nama_gejala']);
@@ -54,7 +54,7 @@ function hitung($data)
 
         $nilai_cf_user[] = $nilai['bobot'];
 
-        echo "Nilai CF untuk " . $parameter . " adalah " . $nilai['bobot'] . "<br>";
+        // echo "Nilai CF untuk " . $parameter . " adalah " . $nilai['bobot'] . "<br>";
     }
     // echo "<br>";
     // Ambil CF User Selesai
@@ -72,7 +72,7 @@ function hitung($data)
             $hasil = $dage['bobot'] * $nilai_cf_user[$indeks];
             ${"cf_he_" . $dp['kode_diagnosa']}[] = $hasil;
 
-            echo "Hasil CF HE dari " . $dp['nama_diagnosa'] . " " . $dage['nama_gejala'] . " perkalian antara " . $dage['bobot'] . " dan " . $nilai_cf_user[$indeks] . " adalah " . $hasil . "<br>";
+            // echo "Hasil CF HE dari " . $dp['nama_diagnosa'] . " " . $dage['nama_gejala'] . " perkalian antara " . $dage['bobot'] . " dan " . $nilai_cf_user[$indeks] . " adalah " . $hasil . "<br>";
 
         }
         // echo "<br>";
@@ -85,7 +85,7 @@ function hitung($data)
 
             ${"cf_old_" . $dp['kode_diagnosa']}[] = number_format(${"cf_old_" . $dp['kode_diagnosa'] . $j} * 100, 2);
 
-            echo "Hasil CF OLD " . $dp['kode_diagnosa'] . $j . " dari perkalian " . ${"cf_old_" . $dp['kode_diagnosa'] . $j - 1} . " + " . ${"cf_he_" . $dp['kode_diagnosa']}[$j] . " * (1 - " . ${"cf_old_" . $dp['kode_diagnosa'] . $j - 1} . ") adalah " . ${"cf_old_" . $dp['kode_diagnosa'] . $j} . "<br>";
+            // echo "Hasil CF OLD " . $dp['kode_diagnosa'] . $j . " dari perkalian " . ${"cf_old_" . $dp['kode_diagnosa'] . $j - 1} . " + " . ${"cf_he_" . $dp['kode_diagnosa']}[$j] . " * (1 - " . ${"cf_old_" . $dp['kode_diagnosa'] . $j - 1} . ") adalah " . ${"cf_old_" . $dp['kode_diagnosa'] . $j} . "<br>";
         }
         // echo "<br>";
 
@@ -96,7 +96,7 @@ function hitung($data)
                 ${"nilai_terbesar_" . $dp['kode_diagnosa']} = ${"cf_old_" . $dp['kode_diagnosa']}[$o];
             }
         }
-        echo "Nilai terbesar dari " . $dp['kode_diagnosa'] . " adalah " . ${"nilai_terbesar_" . $dp['kode_diagnosa']} . "%<br><br>";
+        // echo "Nilai terbesar dari " . $dp['kode_diagnosa'] . " adalah " . ${"nilai_terbesar_" . $dp['kode_diagnosa']} . "%<br><br>";
         // Perhitungan certainty factor selesai
 
 
@@ -109,7 +109,7 @@ function hitung($data)
             ${"sigma_" . $dp['kode_diagnosa']} += $dg['bobot'];
         }
 
-        echo "Nilai sigma H dari " . $dp['nama_diagnosa'] . " adalah " . ${"sigma_" . $dp['kode_diagnosa']} . "<br><br>";
+        // echo "Nilai sigma H dari " . $dp['nama_diagnosa'] . " adalah " . ${"sigma_" . $dp['kode_diagnosa']} . "<br><br>";
 
         foreach ($data_gejala as $dala) {
             if (${"sigma_" . $dp['kode_diagnosa']} == 0) {
@@ -118,19 +118,19 @@ function hitung($data)
                 ${"h_" . $dala['kode_gejala']} = $dala['bobot'] / ${"sigma_" . $dp['kode_diagnosa']};
             }
 
-            echo "Nilai P(H)" . $dala['kode_gejala'] . " hasil dari " . $dala['bobot'] . " / " . ${"sigma_" . $dp['kode_diagnosa']} . " adalah " . ${"h_" . $dala['kode_gejala']} . "<br>";
+            // echo "Nilai P(H)" . $dala['kode_gejala'] . " hasil dari " . $dala['bobot'] . " / " . ${"sigma_" . $dp['kode_diagnosa']} . " adalah " . ${"h_" . $dala['kode_gejala']} . "<br>";
 
             $kata2 = str_replace(" ", "_", $dala['nama_gejala']);
             $indeks2 = array_search($kata2, $nama_gejala);
 
             $hitung2 = $nilai_cf_user[$indeks2] * ${"h_" . $dala['kode_gejala']};
 
-            echo "Hasil dari P(E|H)" . $dala['kode_gejala'] . " x P(H)" . $dala['kode_gejala'] . " yaitu " . $nilai_cf_user[$indeks2] . " x " . ${"h_" . $dala['kode_gejala']} . " adalah " . $hitung2 . "<br><br>";
+            // echo "Hasil dari P(E|H)" . $dala['kode_gejala'] . " x P(H)" . $dala['kode_gejala'] . " yaitu " . $nilai_cf_user[$indeks2] . " x " . ${"h_" . $dala['kode_gejala']} . " adalah " . $hitung2 . "<br><br>";
 
             ${"p_h_" . $dp['kode_diagnosa'] . "xh_" . $dp['kode_diagnosa']} += $hitung2;
         }
 
-        echo "Hasil dari P(E|H)" . $dp['kode_diagnosa'] . " x P(H)" . $dp['kode_diagnosa'] . " adalah " . ${"p_h_" . $dp['kode_diagnosa'] . "xh_" . $dp['kode_diagnosa']} . "<br><br>";
+        // echo "Hasil dari P(E|H)" . $dp['kode_diagnosa'] . " x P(H)" . $dp['kode_diagnosa'] . " adalah " . ${"p_h_" . $dp['kode_diagnosa'] . "xh_" . $dp['kode_diagnosa']} . "<br><br>";
 
         ${"bayes_" . $dp['kode_diagnosa']} = 0;
         foreach ($data_gejala as $tala) {
@@ -146,11 +146,11 @@ function hitung($data)
 
             ${"p_h_e_" . $dp['kode_diagnosa']}[] = ${"p_h_e_" . $tala['kode_gejala']};
 
-            echo "Hasil P(H|E)" . $tala['kode_gejala'] . " yaitu (" . $nilai_cf_user[$indeks3] . " x " . ${"h_" . $tala['kode_gejala']} . ") / " . ${"p_h_" . $dp['kode_diagnosa'] . "xh_" . $dp['kode_diagnosa']} . " adalah " . ${"p_h_e_" . $tala['kode_gejala']} . "<br>";
+            // echo "Hasil P(H|E)" . $tala['kode_gejala'] . " yaitu (" . $nilai_cf_user[$indeks3] . " x " . ${"h_" . $tala['kode_gejala']} . ") / " . ${"p_h_" . $dp['kode_diagnosa'] . "xh_" . $dp['kode_diagnosa']} . " adalah " . ${"p_h_e_" . $tala['kode_gejala']} . "<br>";
 
             ${"bayes_" . $dp['kode_diagnosa'] . $tala['kode_gejala']} = ${"p_h_e_" . $tala['kode_gejala']} * $tala['bobot'];
 
-            echo "Hasil Bayes " . $dp['kode_diagnosa'] . $tala['kode_gejala'] . " dari " . ${"p_h_e_" . $tala['kode_gejala']} . " x " . $tala['bobot'] . " adalah " . ${"bayes_" . $dp['kode_diagnosa'] . $tala['kode_gejala']} . "<br>";
+            // echo "Hasil Bayes " . $dp['kode_diagnosa'] . $tala['kode_gejala'] . " dari " . ${"p_h_e_" . $tala['kode_gejala']} . " x " . $tala['bobot'] . " adalah " . ${"bayes_" . $dp['kode_diagnosa'] . $tala['kode_gejala']} . "<br>";
 
             ${"bayes_" . $dp['kode_diagnosa']} += ${"bayes_" . $dp['kode_diagnosa'] . $tala['kode_gejala']};
         }
@@ -159,7 +159,7 @@ function hitung($data)
 
         ${"hd_" . $dp['kode_diagnosa']} = number_format(${"bayes_" . $dp['kode_diagnosa']} * 100, 2);
 
-        // echo "Hasil Perhitungan Bayes dari " . $dp['nama_diagnosa'] . " adalah " . ${"hd_" . $dp['kode_diagnosa']} . "<br><br>";
+        // echo "Hasil Perhitungan Bayes dari " . $dp['kode_diagnosa'] . " adalah " . ${"hd_" . $dp['kode_diagnosa']} . "<br><br>";
 
     }
 
@@ -174,9 +174,11 @@ function hitung($data)
 
     $query = "INSERT INTO hasil_diagnosa
                     VALUES
-                    (NULL, '$iduser', CURRENT_TIMESTAMP(), ";
+                    (NULL, '$iduser', CURRENT_TIMESTAMP(), '$usia', ";
 
     $query .= $hasilString . ")";
+
+    var_dump($query);
 
     mysqli_query($koneksi, $query);
 
@@ -184,15 +186,15 @@ function hitung($data)
 }
 
 
-function input_usia($data)
-{
-    global $koneksi;
-    $usia = $data['usia'];
+// function input_usia($data)
+// {
+//     global $koneksi;
+//     $usia = $data['usia'];
 
-    mysqli_query($koneksi, "INSERT INTO hasil_diagnosa (usia) VALUES ('$usia')");
+//     mysqli_query($koneksi, "INSERT INTO hasil_diagnosa (usia) VALUES ('$usia')");
 
-    return mysqli_affected_rows($koneksi);
-}
+//     return mysqli_affected_rows($koneksi);
+// }
 
 function cari_deskripsi_solusi($hasil, $cf, $bayes)
 {

@@ -21,18 +21,17 @@ $usia = $tahun_sekarang - $tahun_lahir;
 
 if (isset($_POST['submit'])) {
   if (hitung($_POST) > 0) {
-    input_usia($_POST);
-    // echo "
-    //         <script>
-    //             document.location.href='hasil.php';
-    //         </script>
-    //       ";
+    echo "
+            <script>
+                document.location.href='hasil.php';
+            </script>
+          ";
   } else {
-    // echo "
-    //         <script>
-    //             document.location.href='tes.php';
-    //         </script>
-    //       ";
+    echo "
+            <script>
+                document.location.href='tes.php';
+            </script>
+          ";
   }
 }
 ?>
