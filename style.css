@@ -63,11 +63,11 @@ body{
 }
 
 
-.content .container .dataTables_wrapper{
+.content .container .dataTables_wrapper, .dataTables_wrapper{
     position: relative;
     clear: both;
     padding: 0;
-    margin-top: 25px;
+    margin-top: 10px;
     background: mintcream;
 }
 .container .dataTables_wrapper .dataTables_length {

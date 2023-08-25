@@ -1,3 +1,37 @@
+<?php
+require_once '../konek.php';
+validasi();
+
+$iduser = dekripsi($_COOKIE['mataRara']);
+$data_user = query("SELECT * FROM user WHERE iduser = $iduser")[0];
+
+if (isset($_GET['idhasil'])) {
+  $idhasil = $_GET['idhasil'];
+  $data_hasil = query("SELECT * FROM hasil_diagnosa WHERE idhasil = $idhasil")[0];
+
+  cek_null($data_hasil);
+
+  $penyakit_cf = penyakit_cf($data_hasil);
+  $hasil_cf = hasil_cf($data_hasil);
+
+  $penyakit_bayes = penyakit_bayes($data_hasil);
+  $hasil_bayes = hasil_bayes($data_hasil);
+} else {
+
+  $data_hasil = query("SELECT * FROM hasil_diagnosa WHERE iduser = $iduser AND idhasil = (SELECT MAX(idhasil) FROM hasil_diagnosa WHERE iduser = $iduser)")[0];
+  cek_null($data_hasil);
+
+  $penyakit_cf = penyakit_cf($data_hasil);
+  $hasil_cf = hasil_cf($data_hasil);
+
+  $penyakit_bayes = penyakit_bayes($data_hasil);
+  $hasil_bayes = hasil_bayes($data_hasil);
+}
+
+$terbesar = cari_deskripsi_solusi($data_hasil, $hasil_cf, $hasil_bayes);
+$terbesar_unique = array_values(array_unique($terbesar));
+?>
+
 <html lang="en">
 
 <head>
@@ -31,27 +65,65 @@
       <div class="container" style="margin-top: 25px; color: white; padding: 30px 35px; tex-align-center;">
         <h1>HASIL DIAGNOSA</h1>
         <div class="tabel mt-4 text-dark">
-          <h6 class="pt-3">Ira (19 thn)</h6>
+          <h6 class="pt-3">
+            <?= $data_user['nama']; ?> (
+            <?= $usia; ?>)
+          </h6>
           <h6 class="pb-3">Diagnosa Penyakit Mata Anda Yaitu:</h6>
           <div class="row" style="padding: 0 122px;">
             <div class="col-6  pb-3 text-white" style="width: 350px">
               <div class="tabel py-3" style="background: rgb(51, 107, 135)">
                 <h5>Certainty Factor</h5>
-                <h4>MIOPI 67,5%</h4>
-                <h4>MIOPI 67,5%</h4>
-                <h4>MIOPI 67,5%</h4>
+                <?php for ($i = 0; $i < count($penyakit_cf); $i++): ?>
+                  <h4>
+                    <?= $penyakit_cf[$i]; ?>
+                    <?= $hasil_cf[$i]; ?>%
+                  </h4>
+                <?php endfor; ?>
               </div>
             </div>
             <div class="col-6  pb-3 text-white" style="width: 350px">
               <div class="tabel py-3" style="background: rgb(51, 107, 135)">
                 <h5>Naive Bayes</h5>
-                <h4>MIOPI 40,7%</h4>
-                <h4>MIOPI 40,7%</h4>
-                <h4>MIOPI 40,7%</h4>
+                <?php for ($j = 0; $j < count($penyakit_bayes); $j++): ?>
+                  <h4>
+                    <?= $penyakit_bayes[$j]; ?>
+                    <?= $hasil_bayes[$j]; ?>%
+                  </h4>
+                <?php endfor; ?>
               </div>
             </div>
             <h6 class="pb-3 text-start">Deskripsi</h6>
+            <?php foreach ($terbesar_unique as $tu): ?>
+              <h6 class="text-start">
+                <?= $tu; ?> :
+              </h6>
+              <?php
+              $penyakit_detail = query("SELECT * FROM diagnosa WHERE nama_diagnosa = '$tu'")[0];
+              $deskripsi_penyakit = $penyakit_detail['deskripsi'];
+              ?>
+              <p class="text-start">
+                <?= $deskripsi_penyakit; ?>
+              </p>
+            <?php endforeach; ?>
             <h6 class="pb-3 text-start">Solusi</h6>
+            <?php foreach ($terbesar_unique as $tuni): ?>
+              <h6 class="text-start">
+                <?= $tuni; ?> :
+              </h6>
+              <?php
+              $penyakit_detail = query("SELECT * FROM diagnosa WHERE nama_diagnosa = '$tuni'")[0];
+              $id_penyakit = $penyakit_detail['iddiagnosa'];
+              $data_solusi = query("SELECT * FROM solusi WHERE iddiagnosa = $id_penyakit");
+              ?>
+              <ul class="ms-3">
+                <?php foreach ($data_solusi as $solusi): ?>
+                  <li class="text-start">
+                    <?= $solusi['solusi']; ?>
+                  </li>
+                <?php endforeach; ?>
+              </ul>
+            <?php endforeach; ?>
           </div>
         </div>
         <div class="text-end pt-3">

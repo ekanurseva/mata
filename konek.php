@@ -1,5 +1,41 @@
 <?php
 
+function update_field($data)
+{
+    global $koneksi;
+
+    $oldpenyakit = $data['oldpenyakit'];
+    $nama_penyakit = htmlspecialchars($data['penyakit']);
+
+    if ($nama_penyakit != $oldpenyakit) {
+        $nama_kecil_old = strtolower($oldpenyakit);
+        $nama_old = str_replace(" ", "_", $nama_kecil_old);
+        $cf_old = "cf_" . $nama_old;
+        $bayes_old = "bayes_" . $nama_old;
+
+        $nama_kecil = strtolower($nama_penyakit);
+        $nama = str_replace(" ", "_", $nama_kecil);
+        $cf = "cf_" . $nama;
+        $bayes = "bayes_" . $nama;
+
+        mysqli_query($koneksi, "ALTER TABLE hasil_diagnosa CHANGE $cf_old $cf DOUBLE");
+        mysqli_query($koneksi, "ALTER TABLE hasil_diagnosa CHANGE $bayes_old $bayes DOUBLE");
+    }
+}
+
+function create_field($data)
+{
+    global $koneksi;
+    $kode = htmlspecialchars($data['penyakit']);
+    $nama_kecil = strtolower($kode);
+    $nama = str_replace(" ", "_", $nama_kecil);
+    $cf = "cf_" . $nama;
+    $bayes = "bayes_" . $nama;
+
+    mysqli_query($koneksi, "ALTER TABLE hasil_diagnosa ADD $cf DOUBLE");
+    mysqli_query($koneksi, "ALTER TABLE hasil_diagnosa ADD $bayes DOUBLE");
+}
+
 function hitung($data)
 {
     global $koneksi;
@@ -20,17 +56,346 @@ function hitung($data)
 
         echo "Nilai CF untuk " . $parameter . " adalah " . $nilai['bobot'] . "<br>";
     }
+    // echo "<br>";
     // Ambil CF User Selesai
+
+
     foreach ($data_penyakit as $dp) {
         $idpenyakit = $dp['iddiagnosa'];
         $data_gejala = query("SELECT * FROM gejala WHERE iddiagnosa = $idpenyakit");
 
-        var_dump($data_gejala);
+        // Perhitungan Certainty Factor
+        foreach ($data_gejala as $dage) {
+            $kata = str_replace(" ", "_", $dage['nama_gejala']);
+            $indeks = array_search($kata, $nama_gejala);
+
+            $hasil = $dage['bobot'] * $nilai_cf_user[$indeks];
+            ${"cf_he_" . $dp['kode_diagnosa']}[] = $hasil;
+
+            echo "Hasil CF HE dari " . $dp['nama_diagnosa'] . " " . $dage['nama_gejala'] . " perkalian antara " . $dage['bobot'] . " dan " . $nilai_cf_user[$indeks] . " adalah " . $hasil . "<br>";
+
+        }
+        // echo "<br>";
+
+        ${"cf_old_" . $dp['kode_diagnosa'] . 0} = ${"cf_he_" . $dp['kode_diagnosa']}[0];
+        ;
+
+        for ($j = 1; $j < count(${"cf_he_" . $dp['kode_diagnosa']}); $j++) {
+            ${"cf_old_" . $dp['kode_diagnosa'] . $j} = ${"cf_old_" . $dp['kode_diagnosa'] . $j - 1} + ${"cf_he_" . $dp['kode_diagnosa']}[$j] * (1 - ${"cf_old_" . $dp['kode_diagnosa'] . $j - 1});
+
+            ${"cf_old_" . $dp['kode_diagnosa']}[] = number_format(${"cf_old_" . $dp['kode_diagnosa'] . $j} * 100, 2);
+
+            echo "Hasil CF OLD " . $dp['kode_diagnosa'] . $j . " dari perkalian " . ${"cf_old_" . $dp['kode_diagnosa'] . $j - 1} . " + " . ${"cf_he_" . $dp['kode_diagnosa']}[$j] . " * (1 - " . ${"cf_old_" . $dp['kode_diagnosa'] . $j - 1} . ") adalah " . ${"cf_old_" . $dp['kode_diagnosa'] . $j} . "<br>";
+        }
+        // echo "<br>";
+
+        ${"nilai_terbesar_" . $dp['kode_diagnosa']} = ${"cf_old_" . $dp['kode_diagnosa']}[0];
+
+        for ($o = 1; $o < count(${"cf_old_" . $dp['kode_diagnosa']}); $o++) {
+            if (${"cf_old_" . $dp['kode_diagnosa']}[$o] > ${"nilai_terbesar_" . $dp['kode_diagnosa']}) {
+                ${"nilai_terbesar_" . $dp['kode_diagnosa']} = ${"cf_old_" . $dp['kode_diagnosa']}[$o];
+            }
+        }
+        echo "Nilai terbesar dari " . $dp['kode_diagnosa'] . " adalah " . ${"nilai_terbesar_" . $dp['kode_diagnosa']} . "%<br><br>";
+        // Perhitungan certainty factor selesai
+
+
+        // Perhitungan Naive Bayes
+        ${"sigma_" . $dp['kode_diagnosa']} = 0;
+        ${"p_h_" . $dp['kode_diagnosa'] . "xh_" . $dp['kode_diagnosa']} = 0;
+
+        foreach ($data_gejala as $dg) {
+            // echo "Nilai Hi dari " . $dp['nama_diagnosa'] . " ke " . $dg['kode_gejala'] . " adalah " . $dg['bobot'] . "<br>";
+            ${"sigma_" . $dp['kode_diagnosa']} += $dg['bobot'];
+        }
+
+        echo "Nilai sigma H dari " . $dp['nama_diagnosa'] . " adalah " . ${"sigma_" . $dp['kode_diagnosa']} . "<br><br>";
+
+        foreach ($data_gejala as $dala) {
+            if (${"sigma_" . $dp['kode_diagnosa']} == 0) {
+                ${"h_" . $dala['kode_gejala']} = 0;
+            } else {
+                ${"h_" . $dala['kode_gejala']} = $dala['bobot'] / ${"sigma_" . $dp['kode_diagnosa']};
+            }
+
+            echo "Nilai P(H)" . $dala['kode_gejala'] . " hasil dari " . $dala['bobot'] . " / " . ${"sigma_" . $dp['kode_diagnosa']} . " adalah " . ${"h_" . $dala['kode_gejala']} . "<br>";
+
+            $kata2 = str_replace(" ", "_", $dala['nama_gejala']);
+            $indeks2 = array_search($kata2, $nama_gejala);
+
+            $hitung2 = $nilai_cf_user[$indeks2] * ${"h_" . $dala['kode_gejala']};
+
+            echo "Hasil dari P(E|H)" . $dala['kode_gejala'] . " x P(H)" . $dala['kode_gejala'] . " yaitu " . $nilai_cf_user[$indeks2] . " x " . ${"h_" . $dala['kode_gejala']} . " adalah " . $hitung2 . "<br><br>";
+
+            ${"p_h_" . $dp['kode_diagnosa'] . "xh_" . $dp['kode_diagnosa']} += $hitung2;
+        }
+
+        echo "Hasil dari P(E|H)" . $dp['kode_diagnosa'] . " x P(H)" . $dp['kode_diagnosa'] . " adalah " . ${"p_h_" . $dp['kode_diagnosa'] . "xh_" . $dp['kode_diagnosa']} . "<br><br>";
+
+        ${"bayes_" . $dp['kode_diagnosa']} = 0;
+        foreach ($data_gejala as $tala) {
+            $kata3 = str_replace(" ", "_", $tala['nama_gejala']);
+            $indeks3 = array_search($kata3, $nama_gejala);
+
+            $hitung3 = $nilai_cf_user[$indeks3] * ${"h_" . $tala['kode_gejala']};
+            if (${"p_h_" . $dp['kode_diagnosa'] . "xh_" . $dp['kode_diagnosa']} == 0) {
+                ${"p_h_e_" . $tala['kode_gejala']} = 0;
+            } else {
+                ${"p_h_e_" . $tala['kode_gejala']} = $hitung3 / ${"p_h_" . $dp['kode_diagnosa'] . "xh_" . $dp['kode_diagnosa']};
+            }
+
+            ${"p_h_e_" . $dp['kode_diagnosa']}[] = ${"p_h_e_" . $tala['kode_gejala']};
+
+            echo "Hasil P(H|E)" . $tala['kode_gejala'] . " yaitu (" . $nilai_cf_user[$indeks3] . " x " . ${"h_" . $tala['kode_gejala']} . ") / " . ${"p_h_" . $dp['kode_diagnosa'] . "xh_" . $dp['kode_diagnosa']} . " adalah " . ${"p_h_e_" . $tala['kode_gejala']} . "<br>";
+
+            ${"bayes_" . $dp['kode_diagnosa'] . $tala['kode_gejala']} = ${"p_h_e_" . $tala['kode_gejala']} * $tala['bobot'];
+
+            echo "Hasil Bayes " . $dp['kode_diagnosa'] . $tala['kode_gejala'] . " dari " . ${"p_h_e_" . $tala['kode_gejala']} . " x " . $tala['bobot'] . " adalah " . ${"bayes_" . $dp['kode_diagnosa'] . $tala['kode_gejala']} . "<br>";
+
+            ${"bayes_" . $dp['kode_diagnosa']} += ${"bayes_" . $dp['kode_diagnosa'] . $tala['kode_gejala']};
+        }
+
+        // echo "<br>";
+
+        ${"hd_" . $dp['kode_diagnosa']} = number_format(${"bayes_" . $dp['kode_diagnosa']} * 100, 2);
+
+        // echo "Hasil Perhitungan Bayes dari " . $dp['nama_diagnosa'] . " adalah " . ${"hd_" . $dp['kode_diagnosa']} . "<br><br>";
+
     }
+
+    foreach ($data_penyakit as $dapen) {
+        $value[] = ${"nilai_terbesar_" . $dapen['kode_diagnosa']};
+        $value[] = ${"hd_" . $dapen['kode_diagnosa']};
+    }
+
+    $iduser = dekripsi($_COOKIE['mataRara']);
+
+    $hasilString = implode(", ", $value);
+
+    $query = "INSERT INTO hasil_diagnosa
+                    VALUES
+                    (NULL, '$iduser', CURRENT_TIMESTAMP(), ";
+
+    $query .= $hasilString . ")";
+
+    mysqli_query($koneksi, $query);
+
+    return mysqli_affected_rows($koneksi);
 }
-$koneksi = mysqli_connect("localhost", "root", "", "mata");
-if (mysqli_connect_errno()) {
-    echo "Gagal Menyambungkan" . mysqli_connect_error();
+
+
+function input_usia($data)
+{
+    global $koneksi;
+    $usia = $data['usia'];
+
+    mysqli_query($koneksi, "INSERT INTO hasil_diagnosa (usia) VALUES ('$usia')");
+
+    return mysqli_affected_rows($koneksi);
+}
+
+function cari_deskripsi_solusi($hasil, $cf, $bayes)
+{
+    $data_penyakit = query("SELECT * FROM diagnosa");
+    $data_uji = ["cf", "bayes"];
+    $idhasil2 = $hasil['idhasil'];
+
+    $hasil_cf = $cf;
+    $hasil_bayes = $bayes;
+
+    for ($i = 0; $i < count($data_uji); $i++) {
+        $nilai_yang_dicari = ${"hasil_" . $data_uji[$i]}[0];
+        foreach ($data_penyakit as $dakit) {
+
+            $nama_kecil = strtolower($dakit['nama_diagnosa']);
+            $nama = str_replace(" ", "", $nama_kecil);
+            $kolom = $data_uji[$i] . "_" . $nama;
+
+            // Kueri mencari nilai
+            $query = jumlah_data("SELECT * FROM hasil_diagnosa WHERE $kolom = $nilai_yang_dicari AND idhasil = $idhasil2");
+
+            if ($query == 1) {
+                $terbesar[] = $dakit['nama_diagnosa'];
+            }
+        }
+    }
+
+    return $terbesar;
+}
+
+function penyakit_cf($data)
+{
+
+    $data_penyakit = query("SELECT * FROM diagnosa");
+    $idhasil = $data['idhasil'];
+
+    foreach ($data_penyakit as $dapen) {
+        $nama_kecil = strtolower($dapen['nama_diagnosa']);
+        $nama = str_replace(" ", "", $nama_kecil);
+        $gabung = "cf_" . $nama;
+        $hasil_cf[] = $data[$gabung];
+    }
+
+    rsort($hasil_cf);
+    $tiga_terbesar = array_slice($hasil_cf, 0, 3);
+
+    $array_cf = array_values(array_unique($tiga_terbesar));
+
+    $data_penyakit = query("SELECT * FROM diagnosa");
+
+    for ($i = 0; $i < count($array_cf); $i++) {
+        $nilai_yang_dicari = $array_cf[$i];
+        foreach ($data_penyakit as $dakit) {
+            $nama_kecil = strtolower($dakit['nama_diagnosa']);
+            $nama = str_replace(" ", "", $nama_kecil);
+            $kolom = "cf_" . $nama;
+
+            // Kueri mencari nilai
+            $query = jumlah_data("SELECT * FROM hasil_diagnosa WHERE $kolom = $nilai_yang_dicari AND idhasil = $idhasil");
+
+            if ($query == 1) {
+                $penyakit_cf[] = $dakit['nama_diagnosa'];
+            }
+        }
+    }
+
+    return $penyakit_cf;
+}
+
+function hasil_cf($data)
+{
+    $data_penyakit = query("SELECT * FROM diagnosa");
+
+    foreach ($data_penyakit as $dapen) {
+        $nama_kecil = strtolower($dapen['nama_diagnosa']);
+        $nama = str_replace(" ", "", $nama_kecil);
+        $gabung = "cf_" . $nama;
+        $hasil_cf[] = $data[$gabung];
+    }
+
+    rsort($hasil_cf);
+    $tiga_terbesar = array_slice($hasil_cf, 0, 3);
+    $array_cf = array_values(array_unique($tiga_terbesar));
+
+    $jumlah_nilai = 0;
+    for ($f = 0; $f < count($array_cf); $f++) {
+        foreach ($hasil_cf as $nilai) {
+            if ($nilai === $array_cf[$f]) {
+                $jumlah_nilai++;
+            }
+        }
+    }
+
+    $terbesar = array_slice($hasil_cf, 0, $jumlah_nilai);
+
+
+    return $terbesar;
+}
+
+function penyakit_bayes($data)
+{
+    $data_penyakit = query("SELECT * FROM diagnosa");
+    $idhasil = $data['idhasil'];
+
+    foreach ($data_penyakit as $dapen) {
+        $nama_kecil = strtolower($dapen['nama_diagnosa']);
+        $nama = str_replace(" ", "", $nama_kecil);
+        $gabung = "bayes_" . $nama;
+        $hasil_bayes[] = $data[$gabung];
+    }
+
+    rsort($hasil_bayes);
+    $tiga_terbesar = array_slice($hasil_bayes, 0, 3);
+
+    $array_bayes = array_values(array_unique($tiga_terbesar));
+
+    $data_penyakit = query("SELECT * FROM diagnosa");
+    for ($i = 0; $i < count($array_bayes); $i++) {
+        $nilai_yang_dicari = $array_bayes[$i];
+        foreach ($data_penyakit as $dakit) {
+            $nama_kecil = strtolower($dakit['nama_diagnosa']);
+            $nama = str_replace(" ", "", $nama_kecil);
+            $kolom = "bayes_" . $nama;
+
+            // Kueri mencari nilai
+            $query = jumlah_data("SELECT * FROM hasil_diagnosa WHERE $kolom = $nilai_yang_dicari AND idhasil = $idhasil");
+
+            if ($query > 0) {
+                $penyakit_bayes[] = $dakit['nama_diagnosa'];
+            }
+        }
+    }
+
+    return $penyakit_bayes;
+}
+
+function hasil_bayes($data)
+{
+    $data_penyakit = query("SELECT * FROM diagnosa");
+
+    foreach ($data_penyakit as $dapen) {
+        $nama_kecil = strtolower($dapen['nama_diagnosa']);
+        $nama = str_replace(" ", "", $nama_kecil);
+        $gabung = "bayes_" . $nama;
+        $hasil_bayes[] = $data[$gabung];
+    }
+
+    rsort($hasil_bayes);
+    $tiga_terbesar = array_slice($hasil_bayes, 0, 3);
+    $array_bayes = array_values(array_unique($tiga_terbesar));
+
+    $jumlah_nilai = 0;
+    for ($f = 0; $f < count($array_bayes); $f++) {
+        foreach ($hasil_bayes as $nilai) {
+            if ($nilai === $array_bayes[$f]) {
+                $jumlah_nilai++;
+            }
+        }
+    }
+
+    $terbesar = array_slice($hasil_bayes, 0, $jumlah_nilai);
+
+
+    return $terbesar;
+}
+
+
+
+function cek_null($data)
+{
+    global $koneksi;
+    $penyakit = query("SELECT * FROM diagnosa");
+    $idhasil = $data['idhasil'];
+
+    foreach ($penyakit as $p) {
+        $nama_kecil = strtolower($p['nama_diagnosa']);
+        $nama = str_replace(" ", "", $nama_kecil);
+        $kolom_cf = "cf_" . $nama;
+        $kolom_bayes = "bayes_" . $nama;
+
+        $penyakit_cf[] = $kolom_cf;
+        $penyakit_bayes[] = $kolom_bayes;
+    }
+
+    foreach ($penyakit_cf as $pcf) {
+        if ($data[$pcf] === NULL) {
+            $query = "UPDATE hasil_diagnosa SET 
+                        $pcf = 0
+                    WHERE idhasil = '$idhasil'
+                    ";
+            mysqli_query($koneksi, $query);
+        }
+    }
+
+    foreach ($penyakit_bayes as $pbayes) {
+        if ($data[$pbayes] === NULL) {
+            $query = "UPDATE hasil_diagnosa SET 
+                        $pbayes = 0
+                    WHERE idhasil = '$idhasil'
+                    ";
+            mysqli_query($koneksi, $query);
+        }
+    }
 }
 
 function get_kode_gejala()
@@ -95,6 +460,11 @@ function get_kode_diagnosa()
     }
 
     return $kode_penyakit;
+}
+
+$koneksi = mysqli_connect("localhost", "root", "", "mata");
+if (mysqli_connect_errno()) {
+    echo "Gagal Koneksi Gaes" . mysqli_connect_error();
 }
 
 function query($query)
@@ -431,16 +801,6 @@ function edit_jawaban($data)
             return false;
         }
     }
-    if ($oldbobot !== $bobot) {
-        $result = mysqli_query($koneksi, "SELECT bobot FROM jawaban WHERE bobot = '$bobot'");
-
-        if (mysqli_fetch_assoc($result)) {
-            echo "<script>
-                alert('Bobot sudah dipakai, silahkan gunakan bobot lain');
-            </script>";
-            return false;
-        }
-    }
 
     $query = "UPDATE jawaban SET 
                  jawaban = '$jawaban',
@@ -548,11 +908,10 @@ function update_penyakit($data)
 
 function update_gejala($data)
 {
-    var_dump($data);
     global $koneksi;
     $idgejala = $data['idgejala'];
     $nama_gejala = $data['gejala'];
-    $bobot = $data['bobot'];
+    $bobot = $data['bobot_gejala'];
 
     $query = "UPDATE gejala SET 
                  nama_gejala = '$nama_gejala',

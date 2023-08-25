@@ -1,5 +1,7 @@
 <?php
-include('konek.php');
+require_once 'konek.php';
+
+$data = query("SELECT * FROM hasil_diagnosa");
 $id = dekripsi($_COOKIE['mataRara']);
 $user = query("SELECT * FROM user WHERE iduser = $id")[0];
 
@@ -29,7 +31,7 @@ $user = query("SELECT * FROM user WHERE iduser = $id")[0];
           id="offcanvasDarkLabel"><?php echo $user['nama']; ?></h5>
       </div>
       <ul>
-        <li class=""> <a href="index.php">Dashboard</a></li>
+        <li class=""> <a href="admin.php">Dashboard</a></li>
         <li class=""><a href="pengguna.php">Data Pengguna</a></li>
         <li class=""> <a href="pertanyaan.php">Data Jawaban</a></li>
         <li class=""><a href="gejala.php">Data Gejala</a></li>
@@ -42,45 +44,43 @@ $user = query("SELECT * FROM user WHERE iduser = $id")[0];
     <div class="content" style="width: 100%;">
       <div class="container ">
         <h1 style="text-align:center; margin-top: 30px; color: white; padding: 0px 35px">RIWAYAT TES</h1>
-        <div class="row">
-          <div class="col-6">
-            <form class="d-flex" role="search" style="margin-top: 20px">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-success" style="width: 75px; font-size: 13px" type="submit">Search</button>
-            </form>
-          </div>
-        </div>
-        <div class="row align-items-start text-center" style="margin-top: 15px">
+        <div class="row align-items-start text-center" style="margin-top: 17px">
           <table class="table" id="example">
             <thead>
               <tr>
                 <th scope="col">No</th>
                 <th scope="col">Nama</th>
-                <th scope="col">Usia</th>
                 <th scope="col">Waktu</th>
-                <th scope="col">Hasil</th>
                 <th scope="col">Aksi</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>Saputra</td>
-                <td>22</td>
-                <td>2-07-2023</td>
-                <td>Miopi CF 82% Bayes 80%</td>
-                <td><a style="text-decoration: none;" href="">Cetak </a> | <a style="text-decoration: none;"
-                    href="">Hapus</a></td>
-              </tr>
-              <tr>
-                <th scope="row">2</th>
-                <td>Sasa</td>
-                <td>19</td>
-                <td>4-06-2023</td>
-                <td>Konjungtivitis CF 40% Bayes 50%</td>
-                <td><a style="text-decoration: none;" href="">Cetak</a> | <a style="text-decoration: none;"
-                    href="">Hapus</a></td>
-              </tr>
+              <?php
+              $i = 1;
+              foreach ($data as $d):
+                $waktu_tes = strftime('%H:%M:%S / %d %B %Y', strtotime($d['tanggal']));
+                $iduser = $d['iduser'];
+                $nama = query("SELECT nama FROM user WHERE iduser = $iduser")[0];
+                ?>
+                <tr>
+                  <th scope="row">
+                    <?= $i; ?>
+                  </th>
+                  <td>
+                    <?= $nama['nama']; ?>
+                  </td>
+                  <td>
+                    <?= $waktu_tes; ?>
+                  </td>
+                  <td><a style="text-decoration: none;" href="delete.php?idhasil=<?= $d['idhasil']; ?>"
+                      onclick="return confirm('Apakah anda yakin ingin menghapus data?')">Hapus</a> | <a
+                      style="text-decoration: none;" href="print.php?idhasil=<?= $d['idhasil']; ?>"
+                      target="_blank">Cetak</a></td>
+                </tr>
+                <?php
+                $i++;
+              endforeach;
+              ?>
             </tbody>
           </table>
         </div>

@@ -14,8 +14,26 @@ $pertanyaan2 = query("SELECT DISTINCT nama_gejala FROM gejala LIMIT $jumper2 OFF
 
 $jawaban = query("SELECT * FROM jawaban");
 
+$tgl_lahir = $user['tanggal_lahir'];
+$tahun_lahir = date('Y', strtotime($tgl_lahir));
+$tahun_sekarang = date('Y');
+$usia = $tahun_sekarang - $tahun_lahir;
+
 if (isset($_POST['submit'])) {
-  hitung($_POST);
+  if (hitung($_POST) > 0) {
+    input_usia($_POST);
+    // echo "
+    //         <script>
+    //             document.location.href='hasil.php';
+    //         </script>
+    //       ";
+  } else {
+    // echo "
+    //         <script>
+    //             document.location.href='tes.php';
+    //         </script>
+    //       ";
+  }
 }
 ?>
 
@@ -53,18 +71,23 @@ if (isset($_POST['submit'])) {
         <h1 style="text-align:center; margin-top: 30px; color: white; padding: 0px 35px">TES DIAGNOSA</h1>
         <form action="" method="post">
           <div class="mb-3">
-            <label for="exampleInputEmail1" class="form-label">Nama</label>
+            <label for="exampleInputEmail1" class="form-label text-white fw-bold">Nama</label>
             <input type="email" class="form-control" value="<?php echo $user['nama']; ?>" readonly>
           </div>
-          <h5>Silahkan Pilih Opsi Frekuensi Gejala yang Dialami Di Bawah untuk Mendapatkan Hasil Deteksi Penyakit dan
+          <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label text-white fw-bold">Usia</label>
+            <input type="email" name="usia" class="form-control" value="<?php echo $usia; ?>" readonly>
+          </div>
+          <h5 class="text-white">Silahkan Pilih Opsi Frekuensi Gejala yang Dialami Di Bawah untuk Mendapatkan Hasil
+            Deteksi Penyakit dan
             Solusinya</h5>
           <div class="row">
-            <div class="col-6">
+            <div class="col-6 text-white">
               <?php
               $i = 1;
               foreach ($pertanyaan1 as $p1):
                 ?>
-                <h6>
+                <h6 class="mb-2 mt-4">
                   <?= $i; ?>.
                   <?= $p1['nama_gejala']; ?>
                 </h6>
@@ -82,10 +105,10 @@ if (isset($_POST['submit'])) {
               endforeach;
               ?>
             </div>
-            <div class="col-6">
+            <div class="col-6 text-white">
               <?php foreach ($pertanyaan2 as $p2):
                 ?>
-                <h6>
+                <h6 class="mb-2 mt-4">
                   <?= $i; ?>.
                   <?= $p2['nama_gejala']; ?>
                 </h6>
@@ -116,12 +139,7 @@ if (isset($_POST['submit'])) {
       integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
       crossorigin="anonymous"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script>
-      $(".sidebar ul li").on('click', function () {
-        $(".sidebar ul li.active").removeClass("active")
-        $(this).addClass("active");
-      })
-    </script>
+
 </body>
 
 </html>

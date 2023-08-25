@@ -51,13 +51,6 @@ $data = query("SELECT * FROM user");
               </a>
             </div>
           </div>
-          <div class="col-6">
-            <form style="margin-top: 20px" class="d-flex" role="search">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-success" style="width: 75px; font-size: 13px" type="submit">Search</button>
-
-            </form>
-          </div>
         </div>
         <div class="row align-items-start text-center" style="margin-top: 15px">
           <table class="table" id="example">

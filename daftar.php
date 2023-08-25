@@ -51,10 +51,6 @@ if (isset($_POST["submit_user"])) {
           </select>
         </div>
         <div class="mb-3 text-white">
-          <label class="form-label">Telepon</label>
-          <input name="telepon" required type="text" class="form-control">
-        </div>
-        <div class="mb-3 text-white">
           <label class="form-label">Tanggal Lahir</label>
           <input name="tanggal_lahir" required type="date" class="form-control">
         </div>

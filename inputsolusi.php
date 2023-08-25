@@ -38,12 +38,12 @@ if (isset($_POST["submit_solusi"])) {
 <body>
     <div class="main-container d-flex">
         <div class="sidebar px-3 pt-3">
-            < div class="header pb-3">
+            <div class="header pb-3">
                 <img class="text-center" src="img/<?php echo $user['foto']; ?>"
                     style="width: 50px; margin-right: auto; margin-left: auto; display: block;" alt="">
                 <h5 class="offcanvas-title fw-bold text-center" style="margin-left: auto; font-size: 20px"
                     id="offcanvasDarkLabel"><?php echo $user['nama']; ?></h5>
-            </>
+            </div>
             <ul>
                 <li class=""> <a href="admin.php">Dashboard</a></li>
                 <li class=""><a href="pengguna.php">Data Pengguna</a></li>

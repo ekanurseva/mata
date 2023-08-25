@@ -1,6 +1,8 @@
 <?php
 include("konek.php");
 
+$id = dekripsi($_COOKIE['mataRara']);
+$user = query("SELECT * FROM user WHERE iduser = $id")[0];
 $data_jawaban = query("SELECT * FROM jawaban");
 
 ?>
@@ -25,10 +27,10 @@ $data_jawaban = query("SELECT * FROM jawaban");
         <img class="text-center" src="img/propil.png"
           style="width: 50px; margin-right: auto; margin-left: auto; display: block;" alt="">
         <h5 class="offcanvas-title fw-bold text-center" style="margin-left: auto; font-size: 20px"
-          id="offcanvasDarkLabel">ADMIN</h5>
+          id="offcanvasDarkLabel"><?= $user['nama'];?> </h5>
       </div>
       <ul>
-        <li class=""> <a href="index.php">Dashboard</a></li>
+        <li class=""> <a href="admin.php">Dashboard</a></li>
         <li class=""><a href="pengguna.php">Data Pengguna</a></li>
         <li class="active"> <a href="pertanyaan.php">Data Jawaban</a></li>
         <li class=""><a href="gejala.php">Data Gejala</a></li>

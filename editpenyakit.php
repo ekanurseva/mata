@@ -9,6 +9,7 @@ $data = query("SELECT * FROM diagnosa WHERE iddiagnosa = $iddiagnosa")[0];
 
 if (isset($_POST['submit_penyakit'])) {
   if (update_penyakit($_POST) > 0) {
+    update_field($_POST);
     echo "
           <script>
           alert('Data Berhasil Diubah');

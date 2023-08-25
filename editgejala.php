@@ -23,7 +23,6 @@ if (isset($_POST['submit_gejala'])) {
     echo "
                 <script>
                 alert('Data Gagal Diubah');
-                document.location.href='gejala.php';
                 </script>
             ";
   }
@@ -66,6 +65,8 @@ if (isset($_POST['submit_gejala'])) {
       <div class="container ">
         <h1 style="text-align:center; margin-top: 30px; color: white; padding: 0px 35px">EDIT DATA GEJALA</h1>
         <form method="post" action="">
+          <input type="hidden" name="idgejala" value="<?= $data['idgejala']; ?>">
+
           <div class="mb-3 text-white">
             <label class="form-label">Kode Penyakit</label>
             <input type="text" value="<?= $diagnosa['kode_diagnosa']; ?>" name="penyakit" class="form-control">
@@ -80,9 +81,9 @@ if (isset($_POST['submit_gejala'])) {
           </div>
           <div class="mb-3 text-white">
             <label class="form-label">Bobot</label>
-            <input type="text" name="bobot_gejalat" value="<?= $data['bobot']; ?>" class="form-control">
+            <input type="text" name="bobot_gejala" value="<?= $data['bobot']; ?>" class="form-control">
           </div>
-          <button type="submit" class="btn btn-primary mb-3">Simpan</button>
+          <button type="submit" name="submit_gejala" class="btn btn-primary mb-3">Simpan</button>
         </form>
       </div>
     </div>

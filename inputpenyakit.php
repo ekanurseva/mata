@@ -8,6 +8,7 @@ $kode_penyakit = get_kode_diagnosa();
 
 if (isset($_POST["submit_penyakit"])) {
   if (input_penyakit($_POST) > 0) {
+    create_field($_POST);
     echo "
     <script>
       alert('Input Data Berhasil');
@@ -80,13 +81,6 @@ if (isset($_POST["submit_penyakit"])) {
       integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
       crossorigin="anonymous"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-
-    <script>
-      $(".sidebar ul li").on('click', function () {
-        $(".sidebar ul li.active").removeClass("active");
-        $(this).addClass("active");
-      })
-    </script>
 
 </body>
 

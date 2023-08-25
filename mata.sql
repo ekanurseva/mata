@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 25, 2023 at 03:20 AM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.0.28
+-- Waktu pembuatan: 26 Agu 2023 pada 00.54
+-- Versi server: 10.4.28-MariaDB
+-- Versi PHP: 8.0.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `diagnosa`
+-- Struktur dari tabel `diagnosa`
 --
 
 CREATE TABLE `diagnosa` (
@@ -35,7 +35,7 @@ CREATE TABLE `diagnosa` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
--- Dumping data for table `diagnosa`
+-- Dumping data untuk tabel `diagnosa`
 --
 
 INSERT INTO `diagnosa` (`iddiagnosa`, `kode_diagnosa`, `nama_diagnosa`, `deskripsi`) VALUES
@@ -51,7 +51,7 @@ INSERT INTO `diagnosa` (`iddiagnosa`, `kode_diagnosa`, `nama_diagnosa`, `deskrip
 -- --------------------------------------------------------
 
 --
--- Table structure for table `gejala`
+-- Struktur dari tabel `gejala`
 --
 
 CREATE TABLE `gejala` (
@@ -63,7 +63,7 @@ CREATE TABLE `gejala` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
--- Dumping data for table `gejala`
+-- Dumping data untuk tabel `gejala`
 --
 
 INSERT INTO `gejala` (`idgejala`, `iddiagnosa`, `kode_gejala`, `nama_gejala`, `bobot`) VALUES
@@ -73,7 +73,7 @@ INSERT INTO `gejala` (`idgejala`, `iddiagnosa`, `kode_gejala`, `nama_gejala`, `b
 (4, 1, 'G4', 'Warna sekitar terlihat memudar', 0.6),
 (5, 1, 'G5', 'Rasa silau saat melihat cahaya', 0.4),
 (6, 1, 'G6', 'Penurunan penglihatan di malam hari', 0.8),
-(7, 2, 'G7', 'Mata merah', 1),
+(7, 2, 'G7', 'Mata merah EDIT', 1),
 (8, 2, 'G8', 'Mata berair', 0.6),
 (9, 2, 'G9', 'Mata belekan atau mengeluarkan kotoran', 0.8),
 (10, 2, 'G10', 'Mata bengkak', 0.8),
@@ -106,24 +106,36 @@ INSERT INTO `gejala` (`idgejala`, `iddiagnosa`, `kode_gejala`, `nama_gejala`, `b
 -- --------------------------------------------------------
 
 --
--- Table structure for table `hasil_diagnosa`
+-- Struktur dari tabel `hasil_diagnosa`
 --
 
 CREATE TABLE `hasil_diagnosa` (
   `idhasil` int(10) NOT NULL,
   `iduser` int(15) NOT NULL,
-  `bobot_bayes` double NOT NULL,
   `tanggal` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `usia` int(10) NOT NULL,
-  `hasil_bayes` varchar(45) NOT NULL,
-  `bobot_cf` double NOT NULL,
-  `hasil_cf` varchar(45) NOT NULL
+  `cf_katarak` double NOT NULL,
+  `bayes_katarak` double NOT NULL,
+  `cf_konjungtivitis` double NOT NULL,
+  `bayes_konjungtivitis` double NOT NULL,
+  `cf_miopi` double NOT NULL,
+  `bayes_miopi` double NOT NULL,
+  `cf_glaukoma` double NOT NULL,
+  `bayes_glaukoma` double NOT NULL,
+  `cf_buta_warna` double NOT NULL,
+  `bayes_buta_warna` double NOT NULL,
+  `cf_presbiopi` double NOT NULL,
+  `bayes_presbiopi` double NOT NULL,
+  `cf_astigmatisme` double NOT NULL,
+  `bayes_astigmatisme` double NOT NULL,
+  `cf_hipermetropi` double NOT NULL,
+  `bayes_hipermetropi` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `jawaban`
+-- Struktur dari tabel `jawaban`
 --
 
 CREATE TABLE `jawaban` (
@@ -134,7 +146,7 @@ CREATE TABLE `jawaban` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `jawaban`
+-- Dumping data untuk tabel `jawaban`
 --
 
 INSERT INTO `jawaban` (`idjawaban`, `bobot`, `kode_jawaban`, `jawaban`) VALUES
@@ -146,7 +158,7 @@ INSERT INTO `jawaban` (`idjawaban`, `bobot`, `kode_jawaban`, `jawaban`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pertanyaan`
+-- Struktur dari tabel `pertanyaan`
 --
 
 CREATE TABLE `pertanyaan` (
@@ -159,7 +171,7 @@ CREATE TABLE `pertanyaan` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `solusi`
+-- Struktur dari tabel `solusi`
 --
 
 CREATE TABLE `solusi` (
@@ -169,7 +181,7 @@ CREATE TABLE `solusi` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `solusi`
+-- Dumping data untuk tabel `solusi`
 --
 
 INSERT INTO `solusi` (`idsolusi`, `iddiagnosa`, `solusi`) VALUES
@@ -178,12 +190,29 @@ INSERT INTO `solusi` (`idsolusi`, `iddiagnosa`, `solusi`) VALUES
 (3, 1, 'Operasi laser femtosecond'),
 (4, 2, 'Konjungtivitis bakteri diatasi dengan antibiotik'),
 (5, 2, 'Konjungtuvitis alergi diatasi dengan obat antialergi.'),
-(6, 2, 'Konjungtivitis virus akan sembuh dengan sendirinya. Namun, dapat dilakukan dengan pemberian obat tetes mata untuk meredakan gejala.\r\n');
+(6, 2, 'Konjungtivitis virus akan sembuh dengan sendirinya. Namun, dapat dilakukan dengan pemberian obat tetes mata untuk meredakan gejala.\r\n'),
+(7, 3, 'Penggunaan kacamata atau soft lens'),
+(8, 3, 'Operasi dengan sinar laser (LASIK)\r\n'),
+(9, 3, 'Implan lensa buatan'),
+(10, 4, 'Penggunaan obat tetes mata\r\n\r\n'),
+(11, 4, 'Obat oral'),
+(12, 4, 'Laser'),
+(13, 4, 'Operasi'),
+(15, 5, 'Penggunaan kacamata atau soft lens khusus'),
+(16, 5, 'Menggunakan aplikasi khusus untuk mengidentifikasi warna\r\n'),
+(17, 6, 'Penggunaan kacamata atau soft lens\r\n'),
+(18, 6, 'Operasi dengan sinar laser (LASIK)\r\n'),
+(19, 6, 'Implan lensa buatan'),
+(20, 7, 'Penggunaan kacamata atau soft lens\r\n\r\n'),
+(21, 7, 'Orthokeratologi\r\n'),
+(22, 7, 'Operasi dengan sinar laser (LASIK)'),
+(23, 8, 'Penggunaan kacamata atau soft lens\r\n'),
+(24, 8, 'Operasi dengan sinar laser (LASIK)\r\n');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user`
+-- Struktur dari tabel `user`
 --
 
 CREATE TABLE `user` (
@@ -199,128 +228,130 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
--- Dumping data for table `user`
+-- Dumping data untuk tabel `user`
 --
 
 INSERT INTO `user` (`iduser`, `username`, `password`, `nama`, `jk`, `tanggal_lahir`, `email`, `level`, `foto`) VALUES
 (9, 'bubu', '$2y$10$IUt5E/huR8FrO', 'Bubu', 'P', '1212-12-12', 'bubu@gmail.com', 'admin', 'admin.png'),
-(10, 'eka', '$2y$10$Q/JzWOEAkd9GYFf/FJLZgOxAzIjmSD0qF0lsCJgUZS9dG4tWlvQui', 'Eka Nurseva', 'P', '2010-08-11', 'ekanursevas@gmail.com', 'admin', 'admin.png'),
+(10, 'eka', '$2y$10$4ZaIpcV2E7kbvCTBI9z6o.HPVf1WDx8bbG4Fu2owx6i1F/iiTmSJC', 'Eka Nurseva', 'P', '2010-08-11', 'ekanursevas@gmail.com', 'admin', 'admin.png'),
 (11, 'ali', '$2y$10$CPMTNQlf16TGlOwFly.12ORgi/OfOj8kiMHZ7nS97Rm4ti2IHbXbq', 'Ali Asyidiqiansyah', 'L', '2011-11-25', 'aliasss@gmail.com', 'user', 'admin.png'),
-(12, 'rara', '$2y$10$KKZdVp9Sp95OBBk11Xc7su0e5930p/98bwvGE2WOvj9DyI982p3PS', 'Ira Khumairotunnisa', 'P', '2001-11-11', 'khumairo21@gmail.com', 'admin', 'propil.png');
+(12, 'rara', '$2y$10$KKZdVp9Sp95OBBk11Xc7su0e5930p/98bwvGE2WOvj9DyI982p3PS', 'Ira Khumairotunnisa', 'P', '2001-11-11', 'khumairo21@gmail.com', 'admin', 'propil.png'),
+(13, 'ira25', '$2y$10$IZ1PyZMu/A2ZWL3/wnfFjesP/NgtySXezg7IbnOvhFfROcHGTGBd.', 'ira', 'P', '2001-05-25', 'khumairo21@gmail.com', 'user', 'propil.png'),
+(14, 'siti', '$2y$10$IHQH0Nva4jTq0iQLrktmHercg6twOFhWjhw.bAjaNgQH8fkHW9vFS', 'Siti', 'P', '2000-10-18', 'sitisyarifahmudaim19@gmail.com', 'user', 'propil.png');
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `diagnosa`
+-- Indeks untuk tabel `diagnosa`
 --
 ALTER TABLE `diagnosa`
   ADD PRIMARY KEY (`iddiagnosa`);
 
 --
--- Indexes for table `gejala`
+-- Indeks untuk tabel `gejala`
 --
 ALTER TABLE `gejala`
   ADD PRIMARY KEY (`idgejala`),
   ADD KEY `iddiagnosa` (`iddiagnosa`);
 
 --
--- Indexes for table `hasil_diagnosa`
+-- Indeks untuk tabel `hasil_diagnosa`
 --
 ALTER TABLE `hasil_diagnosa`
   ADD PRIMARY KEY (`idhasil`),
   ADD KEY `iduser` (`iduser`);
 
 --
--- Indexes for table `jawaban`
+-- Indeks untuk tabel `jawaban`
 --
 ALTER TABLE `jawaban`
   ADD PRIMARY KEY (`idjawaban`);
 
 --
--- Indexes for table `pertanyaan`
+-- Indeks untuk tabel `pertanyaan`
 --
 ALTER TABLE `pertanyaan`
   ADD PRIMARY KEY (`idpertanyaan`),
   ADD KEY `idgejala` (`idgejala`);
 
 --
--- Indexes for table `solusi`
+-- Indeks untuk tabel `solusi`
 --
 ALTER TABLE `solusi`
   ADD PRIMARY KEY (`idsolusi`);
 
 --
--- Indexes for table `user`
+-- Indeks untuk tabel `user`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`iduser`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT untuk tabel yang dibuang
 --
 
 --
--- AUTO_INCREMENT for table `diagnosa`
+-- AUTO_INCREMENT untuk tabel `diagnosa`
 --
 ALTER TABLE `diagnosa`
   MODIFY `iddiagnosa` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT for table `gejala`
+-- AUTO_INCREMENT untuk tabel `gejala`
 --
 ALTER TABLE `gejala`
   MODIFY `idgejala` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
--- AUTO_INCREMENT for table `hasil_diagnosa`
+-- AUTO_INCREMENT untuk tabel `hasil_diagnosa`
 --
 ALTER TABLE `hasil_diagnosa`
   MODIFY `idhasil` int(10) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `jawaban`
+-- AUTO_INCREMENT untuk tabel `jawaban`
 --
 ALTER TABLE `jawaban`
-  MODIFY `idjawaban` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `idjawaban` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `pertanyaan`
+-- AUTO_INCREMENT untuk tabel `pertanyaan`
 --
 ALTER TABLE `pertanyaan`
   MODIFY `idpertanyaan` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `solusi`
+-- AUTO_INCREMENT untuk tabel `solusi`
 --
 ALTER TABLE `solusi`
-  MODIFY `idsolusi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `idsolusi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
--- AUTO_INCREMENT for table `user`
+-- AUTO_INCREMENT untuk tabel `user`
 --
 ALTER TABLE `user`
-  MODIFY `iduser` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `iduser` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
--- Constraints for dumped tables
+-- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
 --
 
 --
--- Constraints for table `gejala`
+-- Ketidakleluasaan untuk tabel `gejala`
 --
 ALTER TABLE `gejala`
   ADD CONSTRAINT `gejala_ibfk_1` FOREIGN KEY (`iddiagnosa`) REFERENCES `diagnosa` (`iddiagnosa`);
 
 --
--- Constraints for table `hasil_diagnosa`
+-- Ketidakleluasaan untuk tabel `hasil_diagnosa`
 --
 ALTER TABLE `hasil_diagnosa`
   ADD CONSTRAINT `hasil_diagnosa_ibfk_1` FOREIGN KEY (`iduser`) REFERENCES `user` (`iduser`);
 
 --
--- Constraints for table `pertanyaan`
+-- Ketidakleluasaan untuk tabel `pertanyaan`
 --
 ALTER TABLE `pertanyaan`
   ADD CONSTRAINT `pertanyaan_ibfk_1` FOREIGN KEY (`idgejala`) REFERENCES `gejala` (`idgejala`);

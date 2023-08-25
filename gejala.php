@@ -42,8 +42,8 @@ $penyakit = query("SELECT * FROM diagnosa");
         <li class=""> <a href="keluar.php">Keluar</a></li>
       </ul>
     </div>
+    <div class="container">
     <div class="content" style="width: 100%;">
-      <div class="container ">
         <h1 style="text-align:center; margin-top: 30px; color: white; padding: 0px 35px">DATA GEJALA</h1>
         <div class="row">
           <div class="col-6">
