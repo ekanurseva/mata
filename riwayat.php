@@ -18,7 +18,7 @@ $user = query("SELECT * FROM user WHERE iduser = $id")[0];
     integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-  <title>Document</title>
+  <title>Sistem Pakar Penyakit Mata</title>
 </head>
 
 <body>
@@ -45,7 +45,7 @@ $user = query("SELECT * FROM user WHERE iduser = $id")[0];
       <div class="container ">
         <h1 style="text-align:center; margin-top: 30px; color: white; padding: 0px 35px">RIWAYAT TES</h1>
         <div class="row align-items-start text-center" style="margin-top: 17px">
-          <table class="table" id="example">
+          <table class="table" id="example2">
             <thead>
               <tr>
                 <th scope="col">No</th>
@@ -72,7 +72,7 @@ $user = query("SELECT * FROM user WHERE iduser = $id")[0];
                   <td>
                     <?= $waktu_tes; ?>
                   </td>
-                  <td><a style="text-decoration: none;" href="delete.php?idhasil=<?= $d['idhasil']; ?>"
+                  <td><a style="text-decoration: none;" href="delete_pengguna.php?idhasil=<?= $d['idhasil']; ?>"
                       onclick="return confirm('Apakah anda yakin ingin menghapus data?')">Hapus</a> | <a
                       style="text-decoration: none;" href="print.php?idhasil=<?= $d['idhasil']; ?>"
                       target="_blank">Cetak</a></td>
@@ -94,7 +94,7 @@ $user = query("SELECT * FROM user WHERE iduser = $id")[0];
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script>
     $(document).ready(function () {
-      $("#example").DataTable();
+      $("#example2").DataTable();
     });
   </script>
 </body>

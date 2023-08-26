@@ -28,6 +28,7 @@ if (isset($_GET['idhasil'])) {
   $hasil_bayes = hasil_bayes($data_hasil);
 }
 
+$usia = $data_hasil['usia'];
 $terbesar = cari_deskripsi_solusi($data_hasil, $hasil_cf, $hasil_bayes);
 $terbesar_unique = array_values(array_unique($terbesar));
 ?>
@@ -41,7 +42,7 @@ $terbesar_unique = array_values(array_unique($terbesar));
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
   <link rel="stylesheet" href="../style.css">
-  <title>Document</title>
+  <title>Sistem Pakar Penyakit Mata</title>
 </head>
 
 <body>
@@ -62,13 +63,13 @@ $terbesar_unique = array_values(array_unique($terbesar));
       </ul>
     </div>
     <div class="content text-center" style="width: 100%;">
-      <div class="container" style="margin-top: 25px; color: white; padding: 30px 35px; tex-align-center;">
+      <div class="container" style="margin-top: 17px; color: white; padding: 30px 35px; tex-align-center;">
         <h1>HASIL DIAGNOSA</h1>
         <div class="tabel mt-4 text-dark">
-          <h6 class="pt-3">
+          <h4 class="pt-3 mb-3 fw-bold">
             <?= $data_user['nama']; ?> (
-            <?= $usia; ?>)
-          </h6>
+            <?= $usia; ?> Tahun )
+          </h4>
           <h6 class="pb-3">Diagnosa Penyakit Mata Anda Yaitu:</h6>
           <div class="row" style="padding: 0 122px;">
             <div class="col-6  pb-3 text-white" style="width: 350px">
@@ -93,7 +94,7 @@ $terbesar_unique = array_values(array_unique($terbesar));
                 <?php endfor; ?>
               </div>
             </div>
-            <h6 class="pb-3 text-start">Deskripsi</h6>
+            <h5 class="pb-1 text-start fw-bold">Deskripsi</h5>
             <?php foreach ($terbesar_unique as $tu): ?>
               <h6 class="text-start">
                 <?= $tu; ?> :
@@ -102,13 +103,13 @@ $terbesar_unique = array_values(array_unique($terbesar));
               $penyakit_detail = query("SELECT * FROM diagnosa WHERE nama_diagnosa = '$tu'")[0];
               $deskripsi_penyakit = $penyakit_detail['deskripsi'];
               ?>
-              <p class="text-start">
+              <p class="text-start mb-3">
                 <?= $deskripsi_penyakit; ?>
               </p>
             <?php endforeach; ?>
-            <h6 class="pb-3 text-start">Solusi</h6>
+            <h5 class="pb-1 text-start fw-bold">Solusi</h5>
             <?php foreach ($terbesar_unique as $tuni): ?>
-              <h6 class="text-start">
+              <h6 class="text-start ">
                 <?= $tuni; ?> :
               </h6>
               <?php
@@ -127,7 +128,7 @@ $terbesar_unique = array_values(array_unique($terbesar));
           </div>
         </div>
         <div class="text-end pt-3">
-          <a class="text-decoration-none" href="#">
+          <a class="text-decoration-none" href="../print.php?idhasil=<?= $data_hasil['idhasil']; ?>" target="_blank">
             <button type="submit" class="btn btn-primary" style="width: 100px">Cetak</button>
           </a>
         </div>

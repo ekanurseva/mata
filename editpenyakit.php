@@ -10,19 +10,19 @@ $data = query("SELECT * FROM diagnosa WHERE iddiagnosa = $iddiagnosa")[0];
 if (isset($_POST['submit_penyakit'])) {
   if (update_penyakit($_POST) > 0) {
     update_field($_POST);
-    echo "
-          <script>
-          alert('Data Berhasil Diubah');
-          document.location.href='penyakit.php';
-          </script>
-      ";
+    // echo "
+    //       <script>
+    //       alert('Data Berhasil Diubah');
+    //       document.location.href='penyakit.php';
+    //       </script>
+    //   ";
   } else {
-    echo "
-          <script>
-          alert('Data Gagal Diubah');
-          document.location.href='penyakit.php';
-          </script>
-      ";
+    // echo "
+    //       <script>
+    //       alert('Data Gagal Diubah');
+    //       document.location.href='penyakit.php';
+    //       </script>
+    //   ";
   }
 }
 ?>
@@ -63,6 +63,7 @@ if (isset($_POST['submit_penyakit'])) {
         <h1 style="text-align:center; margin-top: 30px; color: white; padding: 0px 35px">EDIT PENYAKIT</h1>
         <form action="" method="post">
           <input type="hidden" name="iddiagnosa" value="<?= $data['iddiagnosa']; ?>">
+          <input type="hidden" name="oldpenyakit" value="<?= $data['nama_diagnosa']; ?>">
 
           <div class="mb-3 text-white">
             <label class="form-label">Penyakit</label>

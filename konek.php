@@ -178,23 +178,10 @@ function hitung($data)
 
     $query .= $hasilString . ")";
 
-    var_dump($query);
-
     mysqli_query($koneksi, $query);
 
     return mysqli_affected_rows($koneksi);
 }
-
-
-// function input_usia($data)
-// {
-//     global $koneksi;
-//     $usia = $data['usia'];
-
-//     mysqli_query($koneksi, "INSERT INTO hasil_diagnosa (usia) VALUES ('$usia')");
-
-//     return mysqli_affected_rows($koneksi);
-// }
 
 function cari_deskripsi_solusi($hasil, $cf, $bayes)
 {
@@ -815,10 +802,10 @@ function edit_jawaban($data)
     return mysqli_affected_rows($koneksi);
 }
 
-function hapus_jawaban($idgejala)
+function hapus_jawaban($idjawaban)
 {
     global $koneksi;
-    mysqli_query($koneksi, "DELETE FROM jawaban WHERE idjawaban = $idgejala");
+    mysqli_query($koneksi, "DELETE FROM jawaban WHERE idjawaban = $idjawaban");
 
     return mysqli_affected_rows($koneksi);
 }
@@ -925,18 +912,26 @@ function update_gejala($data)
     return mysqli_affected_rows($koneksi);
 }
 
-function hapus_pengguna($id)
+function hapus_hasil($idhasil)
 {
     global $koneksi;
-    mysqli_query($koneksi, "DELETE FROM user WHERE iduser = $id");
+    mysqli_query($koneksi, "DELETE FROM hasil_diagnosa WHERE idhasil = $idhasil");
 
     return mysqli_affected_rows($koneksi);
 }
 
-function hapus_penyakit($id)
+function hapus_pengguna($iduser)
 {
     global $koneksi;
-    mysqli_query($koneksi, "DELETE FROM diagnosa WHERE iddiagnosa = $id");
+    mysqli_query($koneksi, "DELETE FROM user WHERE iduser = $iduser");
+
+    return mysqli_affected_rows($koneksi);
+}
+
+function hapus_penyakit($iddiagnosa)
+{
+    global $koneksi;
+    mysqli_query($koneksi, "DELETE FROM diagnosa WHERE iddiagnosa = $iddiagnosa");
 
     return mysqli_affected_rows($koneksi);
 }
