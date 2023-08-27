@@ -52,7 +52,7 @@ $terbesar_unique = array_values(array_unique($terbesar));
         <img class="text-center" src="../img/propil.png"
           style="width: 50px; margin-right: auto; margin-left: auto; display: block;" alt="">
         <h5 class="offcanvas-title fw-bold text-center" style="margin-left: auto; font-size: 20px"
-          id="offcanvasDarkLabel">USER</h5>
+          id="offcanvasDarkLabel"><?= $data_user['nama']; ?></h5>
       </div>
       <ul>
         <li class=""> <a href="index.php">Dashboard</a></li>

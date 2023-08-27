@@ -2,6 +2,7 @@
 require_once 'konek.php';
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
+    delete_field($id);
 
     if (hapus_penyakit($id) > 0) {
         echo "

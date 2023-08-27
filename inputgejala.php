@@ -66,7 +66,7 @@ if (isset($_POST["submit_gejala"])) {
           <input type="hidden" name="diagnosis" value="<?php echo $_POST['diagnosis']; ?>" id="">
 
           <div class="mb-3 text-white">
-            <label class="form-label">Kode Penyakit</label>
+            <label class="form-label">Nama Penyakit</label>
             <input type="text" class="form-control" name="" disabled value="<?= $data_diagnosa['nama_diagnosa']; ?>">
           </div>
           <div class="mb-3 text-white">

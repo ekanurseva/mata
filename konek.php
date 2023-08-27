@@ -1,5 +1,20 @@
 <?php
 
+function delete_field($id)
+{
+    global $koneksi;
+
+    $data = query("SELECT * FROM diagnosa WHERE iddiagnosa = $id")[0];
+    $nama_penyakit = $data['nama_diagnosa'];
+    $nama_kecil = strtolower($nama_penyakit);
+    $nama = str_replace(" ", "", $nama_kecil);
+    $cf = "cf_" . $nama;
+    $bayes = "bayes_" . $nama;
+
+    mysqli_query($koneksi, "ALTER TABLE hasil_diagnosa DROP COLUMN $cf");
+    mysqli_query($koneksi, "ALTER TABLE hasil_diagnosa DROP COLUMN $bayes");
+}
+
 function update_field($data)
 {
     global $koneksi;
@@ -54,7 +69,7 @@ function hitung($data)
 
         $nilai_cf_user[] = $nilai['bobot'];
 
-        // echo "Nilai CF untuk " . $parameter . " adalah " . $nilai['bobot'] . "<br>";
+        echo "Nilai CF untuk " . $parameter . " adalah " . $nilai['bobot'] . "<br>";
     }
     // echo "<br>";
     // Ambil CF User Selesai
@@ -624,26 +639,6 @@ function register_pengguna($data_user)
 
     return mysqli_affected_rows($koneksi);
 }
-
-// function input_pertanyaan($data_user)
-// {
-//     global $koneksi;
-//     $idgejala = ($data_user['idgejala']);
-//     $pertanyaan = strtolower(stripslashes($data_user["pertanyaan"]));
-//     $kode_pertanyaan = $data_user["kode_pertanyaan"];
-
-//     $result = mysqli_query($koneksi, "SELECT pertanyaan FROM pertanyaan WHERE pertanyaan = 'pertanyaan'") or die(mysqli_error($koneksi));
-//     if (mysqli_fetch_assoc($result)) {
-//         echo "<script>
-//         alert('Pertanyaan Sudah Ada');
-//         </script>";
-//         return false;
-//     }
-
-//     mysqli_query($koneksi, "INSERT INTO user VALUES ('', '$idgejala', '$kode_pertanyaan', '$pertanyaan')");
-
-//     return mysqli_affected_rows($koneksi);
-// }
 
 function input_penyakit($data_user)
 {
